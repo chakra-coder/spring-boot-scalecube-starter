@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootConfiguration
-@ConditionalOnClass(name = "ScalecubeServiceDiscovery")
 public class ScalecubeDiscoveryConfiguration {
 
     private ScalecubeProperties properties;

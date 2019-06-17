@@ -1,21 +1,22 @@
 package io.github.eutkin.scalecube;
 
+import io.github.eutkin.scalecube.codec.BinaryHeadersCodec;
 import io.github.eutkin.scalecube.properties.ScalecubeProperties;
 import io.scalecube.services.Microservices;
 import io.scalecube.services.annotations.Service;
-import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-
+import io.scalecube.services.transport.api.HeadersCodec;
+import io.scalecube.services.transport.api.ServiceMessageCodec;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootConfiguration
-@EnableConfigurationProperties(ScalecubeProperties.class)
 @ComponentScan("io.github.eutkin.scalecube")
 public class ScalecubeAutoConfiguration {
 
@@ -37,6 +38,18 @@ public class ScalecubeAutoConfiguration {
         Map<String, Object> services = beanFactory.getBeansWithAnnotation(Service.class);
 
         return builder.transport(transportCustomizer).services(services).startAwait();
+    }
+
+
+    @Bean
+    @ConditionalOnMissingBean
+    public HeadersCodec defaultHeadersCodec() {
+        return new BinaryHeadersCodec();
+    }
+
+    @Bean
+    public ServiceMessageCodec serviceMessageCodec(HeadersCodec headersCodec) {
+        return new ServiceMessageCodec(headersCodec);
     }
 
 
